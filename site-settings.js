@@ -5,5 +5,5 @@ window.SITE = {
   aiSkills:      { updated: "Oct 24, 2026" },
   figures:       { updated: "Oct 28, 2026" },
   // Free key from web3forms.com. Until it is filled in, the form points people to email.
-  formKey: ""
+  formKey: "8d991ffc-3b8e-422a-bf10-6b6434f13b12"
 };
