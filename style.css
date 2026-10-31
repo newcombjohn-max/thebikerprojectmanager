@@ -50,9 +50,9 @@ h3 { font-weight: 700; }
 
 /* Hero */
 .hero { position: relative; overflow: hidden; background: radial-gradient(ellipse at 30% 25%, #24262B 0%, var(--bg) 62%); }
-.hero-road { position: absolute; left: 0; right: 0; bottom: -40px; width: 100%; height: 34%; }
-.road-bed { fill: none; stroke: #2F3137; stroke-width: 84; }
-.road-line { fill: none; stroke: var(--gold); stroke-width: 6; stroke-dasharray: 44 34; }
+.hero-road { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 42%; }
+.road-bed { fill: none; stroke: #2F3137; stroke-width: 76; vector-effect: non-scaling-stroke; }
+.road-line { fill: none; stroke: var(--gold); stroke-width: 5; stroke-dasharray: 44 34; vector-effect: non-scaling-stroke; }
 .hero-grid { position: relative; display: grid; grid-template-columns: 1fr 340px; gap: 56px; align-items: center; padding-top: 72px; padding-bottom: 88px; }
 .hero h1 { font-size: clamp(60px, 9vw, 112px); font-weight: 800; text-transform: uppercase; letter-spacing: -.005em; line-height: .96; }
 .hero h1 span { color: var(--gold); }
@@ -160,7 +160,7 @@ form .btn { justify-self: start; }
   .site-header nav { width: 100%; justify-content: space-between; gap: 10px; }
   .hero-grid { grid-template-columns: 1fr; gap: 36px; padding-top: 40px; padding-bottom: 56px; }
   .hero-cover { width: 200px; margin: 0 auto; }
-  .hero-road { height: 34%; }
+  .hero-road { height: 26%; }
   .lede { font-size: 18px; }
   .system-strip ul { justify-content: center; font-size: 18px; }
   .ticks { grid-template-columns: 1fr; }
