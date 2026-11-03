@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=202611030859">
 </head>
 <body>
 
@@ -33,6 +33,7 @@
     <nav aria-label="Main">
       <a href="#book">The Book</a>
       <a href="#tools">Downloads</a>
+      <a href="#video">Video</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -139,6 +140,30 @@
     </div>
   </section>
 
+  <section class="theme" id="video">
+    <div class="wrap theme-grid">
+      <div class="theme-copy">
+        <p class="eyebrow">The theme song</p>
+        <h2>Don't overcook <span>the corner</span></h2>
+        <p>Every ride needs a soundtrack. This is the official theme song of The Biker Project Manager™: turn it up, then go plan something worth riding.</p>
+        <div class="theme-actions">
+          <a class="btn btn-gold" href="https://youtu.be/zPj16lNymuA">Watch on YouTube</a>
+          <a class="btn btn-line" href="https://www.youtube.com/@TheBikerProjectManager?sub_confirmation=1">Subscribe</a>
+        </div>
+      </div>
+      <figure class="screen">
+        <p class="screen-bar"><span class="rec" aria-hidden="true"></span>Now playing</p>
+        <div class="video" id="theme-video">
+          <button type="button" class="video-play" aria-label="Play Don't Overcook the Corner, the official theme song">
+            <img src="https://i.ytimg.com/vi/zPj16lNymuA/maxresdefault.jpg" alt="" width="1280" height="720" loading="lazy">
+            <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>Play</span>
+          </button>
+        </div>
+        <figcaption>Don't Overcook the Corner &middot; Official Theme Song</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <section class="about" id="about">
     <div class="wrap about-grid">
       <img src="images/john-newcomb.jpg" alt="John Newcomb" width="640" height="640" loading="lazy">
@@ -190,7 +215,7 @@
   </div>
 </footer>
 
-<script src="site-settings.js?v=202611030856"></script>
+<script src="site-settings.js?v=202611030859"></script>
 <script>
 (function () {
   var site = window.SITE;
@@ -206,6 +231,19 @@
   });
   document.querySelectorAll('a[href^="downloads/"]:not(#cc-download)').forEach(function (a) {
     a.href += '?v=' + encodeURIComponent(site[a.href.indexOf('Figures') > -1 ? 'figures' : 'aiSkills'].updated);
+  });
+
+  // The theme song loads from YouTube only when someone presses play: a faster page, and no YouTube cookies until then.
+  var play = document.querySelector('.video-play');
+  play.addEventListener('click', function () {
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/zPj16lNymuA?autoplay=1&rel=0';
+    f.title = "Don't Overcook the Corner (Official Theme Song)";
+    f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    f.referrerPolicy = 'strict-origin-when-cross-origin';
+    f.allowFullscreen = true;
+    play.replaceWith(f);
+    f.focus();
   });
 
   var form = document.getElementById('contact-form');
