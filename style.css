@@ -161,6 +161,14 @@ form .btn { justify-self: start; }
 .form-status.good { color: var(--gold); }
 .form-status.bad { color: #FF8A8D; }
 
+/* Road Notes, the monthly email: one line under the download cards */
+.road-notes { grid-template-columns: 1.4fr 1fr auto; align-items: end; gap: 14px 22px; margin-top: 34px; border-top: 4px solid var(--gold); }
+.road-notes[hidden] { display: none; }
+.road-notes .marker { margin-bottom: 6px; color: var(--gold); }
+.road-notes div p:last-child { margin: 0; }
+.road-notes .form-status { grid-column: 1 / -1; }
+@media (max-width: 760px) { .road-notes { grid-template-columns: 1fr; } }
+
 /* Footer */
 .site-footer { padding: 0 0 26px; color: var(--muted); font-size: 15px; text-align: center; }
 .site-footer p { margin: 0; }

@@ -137,6 +137,17 @@
         </article>
 
       </div>
+
+      <form class="road-notes" id="road-notes" hidden>
+        <div>
+          <p class="marker">Road Notes</p>
+          <p>One email a month: a field tip from the book, what's new in the Command Center, and a story from the road. Unsubscribe anytime.</p>
+        </div>
+        <label>Email <input type="email" name="email" autocomplete="email" maxlength="150" required></label>
+        <input class="trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn btn-gold" type="submit">Get Road Notes</button>
+        <p class="form-status" role="status"></p>
+      </form>
     </div>
   </section>
 
@@ -198,7 +209,7 @@
           <label>Email <b>*</b> <input type="email" name="email" autocomplete="email" maxlength="150" required></label>
         </div>
         <label>Message <textarea name="message" rows="5" maxlength="5000"></textarea></label>
-        <label class="check"><input type="checkbox" name="subscribe" value="yes"> Sign up for our email list for updates, promotions, and more.</label>
+        <label class="check"><input type="checkbox" name="subscribe" value="yes"> Sign up for Road Notes, our monthly email: a field tip, what's new, and a story from the road.</label>
         <input class="trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
         <button class="btn btn-gold" type="submit">Send</button>
         <p class="form-status" role="status"></p>
@@ -251,9 +262,54 @@
   var button = form.querySelector('button');
   var fallback = 'That did not go through. Please email john@thebikerprojectmanager.com instead.';
 
-  function show(text, kind) {
-    status.textContent = text;
-    status.className = 'form-status ' + kind;
+  function show(text, kind, where) {
+    var s = where || status;
+    s.textContent = text;
+    s.className = 'form-status ' + kind;
+  }
+
+  // A note to John through Web3Forms.
+  function web3(fields) {
+    fields.access_key = site.formKey;
+    fields.from_name = 'The Biker Project Manager™ website';
+    return fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(fields)
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) { if (!data.success) { throw new Error(); } });
+  }
+
+  // Road Notes: adds the address to the Kit form, which sends its own confirm-your-email message (double opt-in).
+  function kit(email, name) {
+    var body = new FormData();
+    body.append('email_address', email);
+    if (name) { body.append('first_name', name); }
+    return fetch('https://app.kit.com/forms/' + encodeURIComponent(site.kitFormId) + '/subscriptions', {
+      method: 'POST', headers: { 'Accept': 'application/json' }, body: body
+    })
+      .then(function (r) { return r.json(); })
+      // Kit answers 200 even when it turns an address down; its verdict is in the reply
+      .then(function (data) { if (!data || data.status !== 'success') { throw new Error(); } });
+  }
+
+  // The Road Notes box shows once Kit is set up. If Kit cannot be reached, the sign-up still reaches John by email.
+  var notes = document.getElementById('road-notes');
+  if (site.kitFormId) {
+    notes.hidden = false;
+    notes.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = notes.elements, st = notes.querySelector('.form-status'), b = notes.querySelector('button');
+      if (f.botcheck.checked) { return; }
+      b.disabled = true;
+      show('Signing you up...', '', st);
+      kit(f.email.value)
+        .catch(function () { return web3({ subject: 'Website: Road Notes signup (Kit did not answer)', email: f.email.value, email_list: 'YES, add me', botcheck: false }); })
+        .then(function () { show('Almost there: check your inbox to confirm.', 'good', st); notes.reset(); })
+        .catch(function () { show(fallback, 'bad', st); })
+        .then(function () { b.disabled = false; });
+    });
   }
 
   form.addEventListener('submit', function (e) {
@@ -266,24 +322,21 @@
     if (!site.formKey) { show(fallback, 'bad'); return; }
     button.disabled = true;
     show('Sending...', '');
-    fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        access_key: site.formKey,
-        subject: f.subscribe.checked ? 'Website: email list signup' : 'Website: contact form',
-        from_name: 'The Biker Project Manager™ website',
-        name: f.name.value,
-        email: f.email.value,
-        email_list: f.subscribe.checked ? 'YES, add me' : 'No',
-        message: f.message.value,
-        botcheck: f.botcheck.checked
+    var list = f.subscribe.checked && site.kitFormId && !f.botcheck.checked,
+      joined = list ? kit(f.email.value, f.name.value).then(function () { return true; }, function () { return false; }) : Promise.resolve(false);
+    joined
+      .then(function (inKit) {
+        return web3({
+          subject: f.subscribe.checked ? 'Website: email list signup' : 'Website: contact form',
+          name: f.name.value,
+          email: f.email.value,
+          email_list: !f.subscribe.checked ? 'No' : inKit ? 'YES, added to Road Notes in Kit (waiting on their confirm)' : 'YES, add me',
+          message: f.message.value,
+          botcheck: f.botcheck.checked
+        }).then(function () { return inKit; });
       })
-    })
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        if (!data.success) { throw new Error(); }
-        show('Thanks! Your note is on its way.', 'good');
+      .then(function (inKit) {
+        show(inKit ? 'Thanks! Your note is on its way. Check your inbox to confirm Road Notes.' : 'Thanks! Your note is on its way.', 'good');
         form.reset();
       })
       .catch(function () { show(fallback, 'bad'); })

@@ -5,5 +5,8 @@ window.SITE = {
   aiSkills:      { updated: "Oct 24, 2026" },
   figures:       { updated: "Oct 28, 2026" },
   // Free key from web3forms.com. Until it is filled in, the form points people to email.
-  formKey: "8d991ffc-3b8e-422a-bf10-6b6434f13b12"
+  formKey: "8d991ffc-3b8e-422a-bf10-6b6434f13b12",
+  // Road Notes, the monthly email: the number of the sign-up form in Kit (kit.com). Until it is filled in, the Road Notes
+  // box stays hidden and email list sign-ups arrive by email as before.
+  kitFormId: "10162285"
 };
