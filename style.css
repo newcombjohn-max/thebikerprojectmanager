@@ -103,6 +103,9 @@ h3 { font-weight: 700; }
 .card h3 { font-size: 30px; }
 .card > p:not(.marker):not(.file) { flex: 1; margin: 12px 0 20px; font-size: 17px; }
 .card .btn { text-align: center; }
+/* the No Excel note sits under the Command Center blurb, quieter than it */
+.card > p.no-excel:not(.marker):not(.file) { flex: none; margin: -8px 0 20px; color: var(--muted); font-size: 15px; }
+.no-excel b { color: var(--cream); }
 .file { margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
 
 /* Theme song: a stage-lit band with the video in a gold-framed screen */
