@@ -1,7 +1,7 @@
 // The only file that changes when a download is updated.
 // Update-Site.ps1 rewrites the version and date lines for you.
 window.SITE = {
-  commandCenter: { version: "3.32", updated: "Nov 8, 2026" },
+  commandCenter: { version: "3.33", updated: "Nov 8, 2026" },
   aiSkills:      { updated: "Oct 24, 2026" },
   figures:       { updated: "Oct 28, 2026" },
   // Free key from web3forms.com. Until it is filled in, the form points people to email.
