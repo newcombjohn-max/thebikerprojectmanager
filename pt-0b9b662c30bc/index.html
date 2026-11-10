@@ -1,0 +1,205 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>Project Round-Trip Pack</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a guided walkthrough in one column; a sticky progress line, a routine box per part, one card per test file */
+:root {
+  --bg: #f5f7fa; --panel: #ffffff; --ink: #1a2331; --muted: #586477; --rule: #d6dce5;
+  --accent: #1f4f8f; --ok: #2f7a4a; --warn: #a3650f; --tint: #e8eef7;
+  --serif: "Source Serif 4", Georgia, serif;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #10151c; --panel: #18202a; --ink: #e4e9f0; --muted: #9aa6b6; --rule: #2c3644;
+  --accent: #7fb0f0; --ok: #6cc38e; --warn: #e0a84e; --tint: #1c2838; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #10151c; --panel: #18202a; --ink: #e4e9f0; --muted: #9aa6b6; --rule: #2c3644;
+  --accent: #7fb0f0; --ok: #6cc38e; --warn: #e0a84e; --tint: #1c2838; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font: 16px/1.6 var(--sans); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 780px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 26px; }
+h1 { font: 700 2rem/1.15 var(--serif); margin: 0; text-wrap: balance; }
+h2 { font: 600 1.3rem/1.25 var(--serif); margin: 0; text-wrap: balance; }
+h3 { font: 600 1.05rem/1.3 var(--sans); margin: 0; }
+p { margin: 0; max-width: 65ch; }
+.lede { color: var(--muted); }
+.eyebrow { font: 500 .74rem/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+section { display: grid; gap: 12px; min-width: 0; }
+ol, ul { margin: 0; padding-left: 22px; display: grid; gap: 7px; max-width: 65ch; }
+code { font-family: var(--mono); font-size: .9em; }
+.progress { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--rule); padding-block: 10px; display: flex; gap: 12px; align-items: center; font-weight: 600; }
+.bar { flex: 1; height: 8px; background: var(--rule); border-radius: 4px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--ok); transition: width .3s; }
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+.routine { background: var(--tint); border-radius: 6px; padding: 16px 18px; display: grid; gap: 10px; }
+.card { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 16px 18px; display: grid; gap: 10px; min-width: 0; }
+.card.is-done { border-color: var(--ok); }
+.head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; justify-content: space-between; }
+.fname { font: 500 .88rem/1.3 var(--mono); color: var(--accent); overflow-wrap: anywhere; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--rule); }
+th { font: 600 .74rem/1.2 var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.watch { border-left: 3px solid var(--warn); padding-left: 10px; font-size: .94rem; }
+textarea { width: 100%; box-sizing: border-box; height: 5.5em; font: 12px/1.4 var(--mono); background: var(--bg); color: var(--ink); border: 1px solid var(--rule); border-radius: 4px; padding: 8px; resize: vertical; }
+.row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+button { font: 600 .9rem/1 var(--sans); color: var(--panel); background: var(--accent); border: 0; border-radius: 4px; padding: 9px 14px; cursor: pointer; }
+button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+label.check { display: flex; gap: 8px; align-items: center; font-weight: 500; cursor: pointer; }
+input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--ok); }
+.done { color: var(--ok); font-weight: 600; font-size: .9rem; }
+.small { font-size: .9rem; color: var(--muted); }
+</style></head><body>
+
+<div class="wrap">
+  <header style="display:grid;gap:10px">
+    <div class="eyebrow">Field Guide Command Center · Microsoft Project check</div>
+    <h1>Project Round-Trip Pack</h1>
+    <p class="lede">Eight tiny test plans, about 20 minutes, one at a time. Nothing to judge: just open each one in Project, save it back, and send the files. Claude does the comparing.</p>
+  </header>
+
+  <div class="progress" aria-live="polite"><span id="count">0 of 8 done</span><div class="bar"><i id="fill"></i></div></div>
+
+  <section>
+    <h2>Before you start (2 minutes)</h2>
+    <ol>
+      <li>Make a folder on your desktop called <code>Project test</code>.</li>
+      <li><a href="Project-test-pack.zip"><b>Download the pack</b></a> (8 small files, about 20 KB). Right-click it, <b>Extract All</b>, and extract into <code>Project test</code>.</li>
+      <li>Open <b>Microsoft Project</b> beside this page.</li>
+      <li>Take them in order. Tick <b>Done</b> on each card as you go; this page remembers where you are.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Part 1: the XML files (tests 1 to 5)</h2>
+    <div class="routine">
+      <h3>Do this for each test</h3>
+      <ol>
+        <li>Project: <b>File &gt; Open &gt; Browse</b>, set the file type box to <b>XML Format</b>, pick the file, <b>Open</b>.</li>
+        <li>Choose <b>As a new project</b>, then <b>OK</b>.</li>
+        <li>If the Planning Wizard pops up: write down the task number it names, choose <b>Continue</b>, <b>OK</b>.</li>
+        <li>Compare the dates with the card's table. If something differs, jot it down. That's all.</li>
+        <li>Project: <b>File &gt; Save As &gt; Browse</b>, set <b>Save as type</b> to <b>XML Format</b>, name it as the card says (it ends in <code>back.xml</code>), <b>Save</b>. Close that project.</li>
+      </ol>
+    </div>
+  </section>
+
+    <section class="card" aria-labelledby="h1">
+    <div class="head"><h2 id="h1">Test 1: One task, one person, no hours entered</h2></div>
+    <p class="fname"><b>File:</b> Test 1.xml &nbsp;Â·&nbsp; Save back as: Test 1 back.xml</p>
+    <div class="tablewrap"><table><thead><tr><th>Task</th><th>Start</th><th>Finish</th><th>Duration</th><th>Person or predecessor</th></tr></thead><tbody><tr><td>Survey the site</td><td>Mon 11/16/26</td><td>Fri 11/20/26</td><td>5 days</td><td>Hannah Brooks, 40 hrs</td></tr></tbody></table></div>
+    <p class="watch"><b>Watch for:</b> Today this kind of task came in as 0 days. It should stay 5 days.</p>
+        <div class="row"><label class="check" style="margin-left:auto"><input type="checkbox" id="d1" data-done="1"> Done</label></div>
+  </section>
+  <section class="card" aria-labelledby="h2">
+    <div class="head"><h2 id="h2">Test 2: Hours entered: 20 hours over 5 days</h2></div>
+    <p class="fname"><b>File:</b> Test 2.xml &nbsp;Â·&nbsp; Save back as: Test 2 back.xml</p>
+    <div class="tablewrap"><table><thead><tr><th>Task</th><th>Start</th><th>Finish</th><th>Duration</th><th>Person or predecessor</th></tr></thead><tbody><tr><td>Survey the site (20 hours over 5 days)</td><td>Mon 11/16/26</td><td>Fri 11/20/26</td><td>5 days</td><td>Hannah Brooks, 20 hrs</td></tr></tbody></table></div>
+    <p class="watch"><b>Watch for:</b> The duration stays 5 days, with 20 hours of work.</p>
+        <div class="row"><label class="check" style="margin-left:auto"><input type="checkbox" id="d2" data-done="2"> Done</label></div>
+  </section>
+  <section class="card" aria-labelledby="h3">
+    <div class="head"><h2 id="h3">Test 3: One finish-to-start link</h2></div>
+    <p class="fname"><b>File:</b> Test 3.xml &nbsp;Â·&nbsp; Save back as: Test 3 back.xml</p>
+    <div class="tablewrap"><table><thead><tr><th>Task</th><th>Start</th><th>Finish</th><th>Duration</th><th>Person or predecessor</th></tr></thead><tbody><tr><td>Task A</td><td>Mon 11/16/26</td><td>Wed 11/18/26</td><td>3 days</td><td>none</td></tr><tr><td>Task B (waits on A)</td><td>Thu 11/19/26</td><td>Fri 11/20/26</td><td>2 days</td><td>Task A</td></tr></tbody></table></div>
+    <p class="watch"><b>Watch for:</b> Task B starts 11/19, right after Task A.</p>
+        <div class="row"><label class="check" style="margin-left:auto"><input type="checkbox" id="d3" data-done="3"> Done</label></div>
+  </section>
+  <section class="card" aria-labelledby="h4">
+    <div class="head"><h2 id="h4">Test 4: A task pinned later than its link would put it</h2></div>
+    <p class="fname"><b>File:</b> Test 4.xml &nbsp;Â·&nbsp; Save back as: Test 4 back.xml</p>
+    <div class="tablewrap"><table><thead><tr><th>Task</th><th>Start</th><th>Finish</th><th>Duration</th><th>Person or predecessor</th></tr></thead><tbody><tr><td>Task A</td><td>Mon 11/16/26</td><td>Tue 11/17/26</td><td>2 days</td><td>none</td></tr><tr><td>Task B (waits on A, starts Nov 23)</td><td>Mon 11/23/26</td><td>Wed 11/25/26</td><td>3 days</td><td>Task A</td></tr></tbody></table></div>
+    <p class="watch"><b>Watch for:</b> The big one. Task B must stay on 11/23, not slide back to 11/18.</p>
+        <div class="row"><label class="check" style="margin-left:auto"><input type="checkbox" id="d4" data-done="4"> Done</label></div>
+  </section>
+  <section class="card" aria-labelledby="h5">
+    <div class="head"><h2 id="h5">Test 5: Two projects, a link between them, and Thanksgiving</h2></div>
+    <p class="fname"><b>File:</b> Test 5.xml &nbsp;Â·&nbsp; Save back as: Test 5 back.xml</p>
+    <div class="tablewrap"><table><thead><tr><th>Task</th><th>Start</th><th>Finish</th><th>Duration</th><th>Person or predecessor</th></tr></thead><tbody><tr><td>X task</td><td>Mon 11/16/26</td><td>Fri 11/20/26</td><td>5 days</td><td>none</td></tr><tr><td>Y task (over Thanksgiving)</td><td>Mon 11/23/26</td><td>Tue 12/1/26</td><td>5 days</td><td>X task</td></tr></tbody></table></div>
+    <p class="watch"><b>Watch for:</b> Y task skips Thu 11/26 and Fri 11/27, so it finishes 12/1.</p>
+        <div class="row"><label class="check" style="margin-left:auto"><input type="checkbox" id="d5" data-done="5"> Done</label></div>
+  </section>
+
+  <section>
+    <h2>Part 2: the CSV files (tests 6 to 8)</h2>
+    <p>The same plans as tests 1, 3 and 4, sent as CSV, to see whether Project handles CSV better than XML.</p>
+    <div class="routine">
+      <h3>Do this for each test</h3>
+      <ol>
+        <li>Project: <b>File &gt; Open &gt; Browse</b>, set the file type box to <b>CSV (Comma delimited)</b>, pick the file, <b>Open</b>. The Import Wizard starts.</li>
+        <li><b>Next</b>, then <b>New map</b>, <b>Next</b>, then <b>As a new project</b>, <b>Next</b>.</li>
+        <li>Tick <b>Tasks</b>. Leave <b>Import includes headers</b> ticked. <b>Next</b>.</li>
+        <li>The mapping table: each column on the left (Name, Outline Level, Duration, Start, Predecessors, Resource Names) should already have the same name on the right. If any says <b>(not mapped)</b>, click it and pick the field with the same name. Jot down whether you had to.</li>
+        <li><b>Next</b>, then <b>Finish</b>. Don't save the map.</li>
+        <li>Planning Wizard, the date check and the save back are the same as Part 1, steps 3 to 5. The save-back is still <b>XML Format</b>.</li>
+      </ol>
+    </div>
+  </section>
+
+    <section class="card" aria-labelledby="h6">
+    <div class="head"><h2 id="h6">Test 6: CSV: one task, one person (same as test 1)</h2></div>
+    <p class="fname"><b>File:</b> Test 6.csv &nbsp;Â·&nbsp; Save back as: Test 6 back.xml</p>
+    <div class="tablewrap"><table><thead><tr><th>Task</th><th>Start</th><th>Finish</th><th>Duration</th><th>Person or predecessor</th></tr></thead><tbody><tr><td>Survey the site</td><td>Mon 11/16/26</td><td>Fri 11/20/26</td><td>5 days</td><td>Hannah Brooks, 40 hrs</td></tr></tbody></table></div>
+    <p class="watch"><b>Watch for:</b> It should stay 5 days.</p>
+        <div class="row"><label class="check" style="margin-left:auto"><input type="checkbox" id="d6" data-done="6"> Done</label></div>
+  </section>
+  <section class="card" aria-labelledby="h7">
+    <div class="head"><h2 id="h7">Test 7: CSV: one link (same as test 3)</h2></div>
+    <p class="fname"><b>File:</b> Test 7.csv &nbsp;Â·&nbsp; Save back as: Test 7 back.xml</p>
+    <div class="tablewrap"><table><thead><tr><th>Task</th><th>Start</th><th>Finish</th><th>Duration</th><th>Person or predecessor</th></tr></thead><tbody><tr><td>Task A</td><td>Mon 11/16/26</td><td>Wed 11/18/26</td><td>3 days</td><td>none</td></tr><tr><td>Task B (waits on A)</td><td>Thu 11/19/26</td><td>Fri 11/20/26</td><td>2 days</td><td>Task A</td></tr></tbody></table></div>
+    <p class="watch"><b>Watch for:</b> Task B starts 11/19, right after Task A.</p>
+        <div class="row"><label class="check" style="margin-left:auto"><input type="checkbox" id="d7" data-done="7"> Done</label></div>
+  </section>
+  <section class="card" aria-labelledby="h8">
+    <div class="head"><h2 id="h8">Test 8: CSV: pinned later than its link (same as test 4)</h2></div>
+    <p class="fname"><b>File:</b> Test 8.csv &nbsp;Â·&nbsp; Save back as: Test 8 back.xml</p>
+    <div class="tablewrap"><table><thead><tr><th>Task</th><th>Start</th><th>Finish</th><th>Duration</th><th>Person or predecessor</th></tr></thead><tbody><tr><td>Task A</td><td>Mon 11/16/26</td><td>Tue 11/17/26</td><td>2 days</td><td>none</td></tr><tr><td>Task B (waits on A starts Nov 23)</td><td>Mon 11/23/26</td><td>Wed 11/25/26</td><td>3 days</td><td>Task A</td></tr></tbody></table></div>
+    <p class="watch"><b>Watch for:</b> Task B must stay on 11/23, not slide back to 11/18.</p>
+        <div class="row"><label class="check" style="margin-left:auto"><input type="checkbox" id="d8" data-done="8"> Done</label></div>
+  </section>
+
+  <section>
+    <h2>Part 3: send them back</h2>
+    <ol>
+      <li>In <code>Project test</code> you should have eight files ending in <code>back.xml</code>.</li>
+      <li>Get them to Claude the same way the Project files got there on Nov 10.</li>
+      <li>Add your notes: any Planning Wizard task numbers, any dates that looked off, and whether the CSV wizard needed fixing. A few words each is plenty.</li>
+    </ol>
+    <p class="small">The files use a made-up project with sample names, nothing from Ferguson or Presidio. Every XML file passes Microsoft's Project XML schema.</p>
+  </section>
+
+  <section>
+    <h2>What happens next</h2>
+    <p>Claude compares each back file with what was sent, field by field, and says in plain words which way works: XML, CSV, or both. Whatever Project changed becomes a test in the app, so it can't come back. Then one release.</p>
+  </section>
+</div>
+
+<script>
+const KEY = 'pack-done-v2';
+let done = {};
+try { done = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { done = {}; }
+const boxes = [...document.querySelectorAll('input[data-done]')];
+const paint = () => {
+  const n = boxes.filter(b => b.checked).length;
+  document.getElementById('count').textContent = `${n} of ${boxes.length} done`;
+  document.getElementById('fill').style.width = (100 * n / boxes.length) + '%';
+  boxes.forEach(b => b.closest('.card').classList.toggle('is-done', b.checked));
+};
+boxes.forEach(b => {
+  b.checked = !!done[b.dataset.done];
+  b.addEventListener('change', () => {
+    done[b.dataset.done] = b.checked;
+    try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {}
+    paint();
+  });
+});
+paint();
+document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => {
+  const ta = document.getElementById(b.dataset.copy), msg = b.parentElement.querySelector('.done');
+  const fallback = () => { ta.focus(); ta.select(); msg.textContent = 'Selected: press Ctrl+C'; };
+  try {
+    navigator.clipboard.writeText(ta.value).then(() => { msg.textContent = 'Copied. Paste into Notepad.'; }, fallback);
+  } catch (e) { fallback(); }
+}));
+</script></body></html>
