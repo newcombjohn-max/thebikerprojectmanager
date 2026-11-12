@@ -2,7 +2,7 @@
 // Update-Site.ps1 rewrites the version and date lines for you.
 window.SITE = {
   commandCenter: { version: "3.50", updated: "Nov 12, 2026" },
-  aiSkills:      { updated: "Nov 9, 2026" },
+  aiSkills:      { updated: "Nov 12, 2026" },
   figures:       { updated: "Oct 28, 2026" },
   // Free key from web3forms.com. Until it is filled in, the form points people to email.
   formKey: "8d991ffc-3b8e-422a-bf10-6b6434f13b12",
